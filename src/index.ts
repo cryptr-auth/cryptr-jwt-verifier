@@ -2,7 +2,7 @@ import jwksClient from "jwks-rsa";
 import jwtDecode from "jwt-decode";
 import nJwt from "njwt";
 
-import { validClientId, validIssuer } from "@cryptr/cryptr-config-validation";
+import { validIssuer } from "@cryptr/cryptr-config-validation";
 import { CryptrConfig, CryptrOptions, VerifyError } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
 
