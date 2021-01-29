@@ -19,7 +19,7 @@
     "publish:lib": "npm publish"
   },
   "dependencies": {
-    "@cryptr/cryptr-config-validation": "^1.0.1",
+    "@cryptr/cryptr-config-validation": "^0.1.0",
     "@types/jwt-decode": "^2.2.1",
     "jwks-rsa": "^1.10.1",
     "jwt-decode": "^2.2.0",
