@@ -1,6 +1,6 @@
 {
   "name": "@cryptr/cryptr-jwt-verifier",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Cryptr Jwt verifier library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
     "make-badges": "istanbul-badges-readme",
     "test": "jest --env=node --config jest.config.json && npm run make-badges && yarn build",
     "test:watch": "jest --watchAll --env=node --config jest.config.json && yarn build",
-    "unpublish": "npm unpublish ${npm_package_name}@{npm_package_version} --force",
+    "unpublish": "npm unpublish ${npm_package_name}@${npm_package_version} --force",
     "publish-force": "npm run unpublish && npm run build && ls && npm run publish:lib",
     "publish": "npm run build && ls && npm run publish:lib",
     "publish:lib": "npm publish"
