@@ -6,9 +6,11 @@ import { validIssuer } from "@cryptr/cryptr-config-validation";
 import { CryptrConfig, CryptrOptions, VerifyError } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
 
-const claimsErrors = (claims: any, cryptrConfig: CryptrConfig) => {
+const genIss = (tnt: string, issuer: string): string => {
+  return `${issuer}/t/${tnt}`
+}
   return {
-    "issuer": claims["iss"] === cryptrConfig.issuer,
+    "issuer": claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
     "audiences": cryptrConfig.audiences.includes(claims["aud"]),
     "tenants": cryptrConfig.tenants.includes(claims["tnt"])
   }
@@ -16,7 +18,6 @@ const claimsErrors = (claims: any, cryptrConfig: CryptrConfig) => {
 class CryptrJwtVerifier {
   cryptrConfig: CryptrConfig;
   jwksUri: string;
-  jwksClient;
   cryptrOpts;
 
   constructor(cryptrConfig: CryptrConfig, opts: CryptrOptions = DEFAULT_OPTS) {
@@ -27,31 +28,38 @@ class CryptrJwtVerifier {
     this.cryptrConfig = cryptrConfig;
     this.jwksUri = `${cryptrConfig.issuer}/.well-known`;
 
-    this.jwksClient = jwksClient({
-      jwksUri: this.jwksUri,
-      cache: true,
-      cacheMaxAge: cryptrConfig.cacheMaxAge || 60 * 60 * 1000,
-      cacheMaxEntries: 3,
-      jwksRequestsPerMinute: cryptrConfig.jwksRequestsPerMinute || 10,
-      rateLimit: true,
-    });
   }
 
-  getKid(token: string) {
+  getKid(token: string): string | undefined {
     const decode: object = jwtDecode(token, { header: true });
     return decode["kid"];
   }
+  
+  getTnt(token: string) : string | undefined {
+    const decode: object = jwtDecode(token);
+    return decode["tnt"];
+  }
 
-  async getPublicKey(kid: string) {
+  async getPublicKey(tnt: string, kid: string): Promise<unknown> {
+    let jwksUri = `${genIss(tnt, this.cryptrConfig.issuer)}/.well-known`;
+    let client = jwksClient({
+      jwksUri: jwksUri,
+      cache: true,
+      cacheMaxAge: this.cryptrConfig.cacheMaxAge ?? 60 * 60 * 1000,
+      cacheMaxEntries: 3,
+      jwksRequestsPerMinute: this.cryptrConfig.jwksRequestsPerMinute ?? 10,
+      rateLimit: true,
+    })
     return new Promise((resolve, reject) => {
-      this.jwksClient.getSigningKey(kid, (err, key: any) => {
-        if (err) {
+      client.getSigningKey(kid, (err, key: any) => {
+        if(err) {
           return reject(err);
         } else {
-          return resolve(key["publicKey"]);
+          console.debug(key)
+          return resolve(key["publicKey"])
         }
-      });
-    });
+      })
+    })
   }
 
   handleVerifyError(reject, error: VerifyError) {
@@ -66,8 +74,10 @@ class CryptrJwtVerifier {
 
     return new Promise((resolve, reject) => {
       try{
-        const kid = this.getKid(token);
-        this.getPublicKey(kid)
+        const kid = this.getKid(token)!!!;
+        const tnt = this.getTnt(token)!!!;
+
+        this.getPublicKey(tnt, kid)
           .then(publicKey => {
             nJwt.verify(token, publicKey, SIGNING_ALG, (err, verifiedJwt) => {
               if(err){
