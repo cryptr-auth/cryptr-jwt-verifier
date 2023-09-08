@@ -12,17 +12,18 @@ const CONFIG = {
   tenants: arrayEnv(process.env.CRYPTR_TENANTS)
 };
 let verifier =  new CryptrJwtVerifier.default(CONFIG);
-let token = process.env.CRYPTR_TOKEN_1
+let token1 = process.env.CRYPTR_TOKEN_1
 let token2 = process.env.CRYPTR_TOKEN_2
-
 verifier
-  .verify(token)
+  .verify(token1)
   .then((resp) => {
-    console.debug(resp)
+    console.debug('token1', resp)
   })
   .catch((error) => {
-    console.error(error)
+    console.error('token1', error)
   });
+
+
 
 verifier
   .verify(token2)
@@ -30,5 +31,8 @@ verifier
     console.debug('token 2', resp)
   })
   .catch((error) => {
-    console.error('token 2', error)
+    console.error('token 2 err', error)
   });
+
+
+
