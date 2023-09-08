@@ -1,4 +1,4 @@
-import jwksClient from "jwks-rsa";
+import jwksClient, { SigningKey } from "jwks-rsa";
 import jwtDecode from "jwt-decode";
 import nJwt from "njwt";
 
@@ -6,9 +6,16 @@ import { validIssuer } from "@cryptr/cryptr-config-validation";
 import { CryptrConfig, CryptrOptions, VerifyError } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
 
-const claimsErrors = (claims: any, cryptrConfig: CryptrConfig) => {
+const genIss = (tnt: string, issuer: string): string => {
+  return `${issuer}/t/${tnt}`
+}
+
+const claimsErrors = (claims: any, cryptrConfig: CryptrConfig): object => {
+  console.log('cryptrConfig', cryptrConfig)
+  console.log('cid', claims["cid"])
   return {
-    "issuer": claims["iss"] === cryptrConfig.issuer,
+    "issuer": claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
+    "client_ids": cryptrConfig.client_ids.includes(claims["cid"]),
     "audiences": cryptrConfig.audiences.includes(claims["aud"]),
     "tenants": cryptrConfig.tenants.includes(claims["tnt"])
   }
@@ -16,7 +23,6 @@ const claimsErrors = (claims: any, cryptrConfig: CryptrConfig) => {
 class CryptrJwtVerifier {
   cryptrConfig: CryptrConfig;
   jwksUri: string;
-  jwksClient;
   cryptrOpts;
 
   constructor(cryptrConfig: CryptrConfig, opts: CryptrOptions = DEFAULT_OPTS) {
@@ -27,75 +33,91 @@ class CryptrJwtVerifier {
     this.cryptrConfig = cryptrConfig;
     this.jwksUri = `${cryptrConfig.issuer}/.well-known`;
 
-    this.jwksClient = jwksClient({
-      jwksUri: this.jwksUri,
-      cache: true,
-      cacheMaxAge: cryptrConfig.cacheMaxAge || 60 * 60 * 1000,
-      cacheMaxEntries: 3,
-      jwksRequestsPerMinute: cryptrConfig.jwksRequestsPerMinute || 10,
-      rateLimit: true,
-    });
   }
 
-  getKid(token: string) {
+  getKid(token: string): string | never  {
     const decode: object = jwtDecode(token, { header: true });
     return decode["kid"];
   }
-
-  async getPublicKey(kid: string) {
-    return new Promise((resolve, reject) => {
-      this.jwksClient.getSigningKey(kid, (err, key: any) => {
-        if (err) {
-          return reject(err);
-        } else {
-          return resolve(key["publicKey"]);
-        }
-      });
-    });
+  
+  getTnt(token: string) : string | undefined {
+    const decode: object = jwtDecode(token);
+    return decode["tnt"];
   }
 
-  handleVerifyError(reject, error: VerifyError) {
+  async getPublicKey(tnt: string, kid: string): Promise<SigningKey> {
+    let jwksUri = `${genIss(tnt, this.cryptrConfig.issuer)}/.well-known`;
+    let client = jwksClient({
+      jwksUri: jwksUri,
+      cache: true,
+      cacheMaxAge: this.cryptrConfig.cacheMaxAge ?? 60 * 60 * 1000,
+      cacheMaxEntries: 3,
+      jwksRequestsPerMinute: this.cryptrConfig.jwksRequestsPerMinute ?? 10,
+      rateLimit: true,
+    })
+    return new Promise((resolve, reject) => {
+      client.getSigningKey(kid, (err, key: any) => {
+        if(err) {
+          return reject(err);
+        } else {
+          return resolve(key["publicKey"])
+        }
+      })
+    })
+  }
+
+  handleVerifyError(reject: (reason?: any) => void, error: VerifyError) {
     this.handleVerifyErrorMessage(reject, error.message)
   }
 
-  handleVerifyErrorMessage(reject, msg: string) {
+  handleVerifyErrorMessage(reject: (reason?: any) => void, msg: string) {
     reject({valid: false, errors: msg})
   }
 
-  async verify(token: string) {
+  handleVerifySuccess(verifiedJwt: object, resolve: (value: any) => void, reject: (reason?: any) => void) {
+    const jwtBody = verifiedJwt["body"]
 
-    return new Promise((resolve, reject) => {
+    const errorClaims = claimsErrors(jwtBody, this.cryptrConfig)
+    const validClaims = Object.values(errorClaims).every(item => item)
+
+    if(validClaims) {
+      return resolve({valid: true, claims: jwtBody})
+    } else {
+      let keysToCheck: string[] = []
+      Object.keys(errorClaims).forEach(k => {if(!errorClaims[k]) { keysToCheck.push(k) }})
+      return this.handleVerifyErrorMessage(reject, `Non-compliant claims,\nplease check ${keysToCheck.join(', ')}`)
+    }
+  }
+
+  verifyTokenWithKey(token: string, publicKey: SigningKey, resolve: (value: any) => void, reject: (reason?: any) => void) {
+    return nJwt.verify(token, publicKey, SIGNING_ALG, (err: any, verifiedJwt: object) => {
+        if(err) {
+          console.debug(err)
+          return this.handleVerifyError(reject, err)
+        } else {
+          console.debug("there")
+          return this.handleVerifySuccess(verifiedJwt, resolve, reject)
+        }
+    })
+  }
+
+  async verify(token: string): Promise<unknown> {
+
+    return new Promise((resolve: (value: any) => void, reject: (reason?: any) => void) => {
       try{
-        const kid = this.getKid(token);
-        this.getPublicKey(kid)
+        const kid = this.getKid(token)!!!;
+        const tnt = this.getTnt(token)!!!;
+
+        this.getPublicKey(tnt, kid)
           .then(publicKey => {
-            nJwt.verify(token, publicKey, SIGNING_ALG, (err, verifiedJwt) => {
-              if(err){
-                this.handleVerifyError(reject, err)
-              }else{
-                const jwtBody = verifiedJwt["body"]
-                const errorClaims = claimsErrors(jwtBody, this.cryptrConfig)
-                const validClaims = Object.values(errorClaims).every(item => item)
-                if (validClaims) {
-                  resolve({
-                    valid: true,
-                    claims: jwtBody
-                  })
-                } else {
-                  let keysToCheck : String[] = []
-                  Object.keys(errorClaims).forEach(key => {
-                    if(!errorClaims[key]) { keysToCheck.push(key)}
-                  });
-                  this.handleVerifyErrorMessage(reject, `Non-compliant claims, please check ${keysToCheck.join(', ')}`)
-                }
-              }
-            });
+            this.verifyTokenWithKey(token, publicKey, resolve, reject)
           })
           .catch((err) => {
             this.handleVerifyError(reject, err)
           })
-      }catch(err){
-        this.handleVerifyError(reject, err)
+      } catch(err)
+      {
+        this.handleVerifyError(reject, err as VerifyError)
       }
     });
   }

@@ -1,6 +1,6 @@
 {
   "name": "@cryptr/cryptr-jwt-verifier",
-  "version": "0.1.1",
+  "version": "0.2.5",
   "description": "Cryptr Jwt verifier library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,21 +16,25 @@
     "unpublish": "npm unpublish ${npm_package_name}@${npm_package_version} --force",
     "publish-force": "npm run unpublish && npm run build && ls && npm run publish:lib",
     "publish": "npm run build && ls && npm run publish:lib",
-    "publish:lib": "npm publish"
+    "publish:lib": "npm publish",
+    "dev": "nodemon dev/index.js"
   },
   "dependencies": {
     "@cryptr/cryptr-config-validation": "^0.1.0",
     "@types/jwt-decode": "^2.2.1",
-    "jwks-rsa": "^1.10.1",
+    "dotenv": "^16.3.1",
+    "jwks-rsa": "^3.0.1",
     "jwt-decode": "^2.2.0",
-    "njwt": "^1.0.0"
+    "njwt": "^1.0.0",
+    "nodemon": "^3.0.1"
   },
   "keywords": [
     "cryptr",
     "jwt",
     "authentication",
     "oAuth",
-    "token"
+    "token",
+    "jwks"
   ],
   "author": "Cryptr <thibaud@cryptr.co> (https://www/cryptr.co)",
   "license": "ISC",
@@ -43,10 +47,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shark-up/cryptr-jwt-verifier.git"
+    "url": "git+https://github.com/cryptr-auth/cryptr-jwt-verifier.git"
   },
   "bugs": {
-    "url": "https://github.com/shark-up/cryptr-jwt-verifier/issues"
+    "url": "https://github.com/cryptr-auth/cryptr-jwt-verifier/issues"
   },
-  "homepage": "https://github.com/shark-up/cryptr-jwt-verifier#readme"
+  "homepage": "https://github.com/cryptr-auth/cryptr-jwt-verifier#readme"
 }
