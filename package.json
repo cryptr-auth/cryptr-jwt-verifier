@@ -47,10 +47,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shark-up/cryptr-jwt-verifier.git"
+    "url": "git+https://github.com/cryptr-auth/cryptr-jwt-verifier.git"
   },
   "bugs": {
-    "url": "https://github.com/shark-up/cryptr-jwt-verifier/issues"
+    "url": "https://github.com/cryptr-auth/cryptr-jwt-verifier/issues"
   },
-  "homepage": "https://github.com/shark-up/cryptr-jwt-verifier#readme"
+  "homepage": "https://github.com/cryptr-auth/cryptr-jwt-verifier#readme"
 }
