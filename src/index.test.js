@@ -4,24 +4,28 @@ import {DEFAULT_OPTS} from "./defaults";
 const CONFIG = {
   audiences: ["http://localhost:4200"],
   issuer: "http://localhost:4000",
-  tenants: ["shark-academy"]
+  tenants: ["shark-academy"],
+  client_ids: ["724b141a-e1eb-4f5b-bfca-22eca8ae3cc4"]
 };
 
 const SECOND_CONFIG = {
   audiences: ["http://localhost:4200"],
   issuer: "http://localhost:4000",
-  tenants: ["cryptr"]
+  tenants: ["cryptr"],
+  client_ids: ["724b141a-e1eb-4f5b-bfca-22eca8ae3cc4"]
 };
 
 const SECURE_CONFIG = {
   audiences: ["https://localhost:3001"],
   issuer: "https://localhost:4000",
-  tenants: ["shark-academy"]
+  tenants: ["shark-academy"],
+  client_ids: ["724b141a-e1eb-4f5b-bfca-22eca8ae3cc4"]
 };
 
 const WRONG_CONFIG = {
   audiences: ["https://localhost:3001"],
-  issuer: "https://localhost:4000"
+  issuer: "https://localhost:4000",
+  client_ids: ["724b141a-e1eb-4f5b-bfca-22eca8ae3cc4"]
 };
 
 const cryptrJwtVerifier = new CryptrJwtVerifier(CONFIG, { test: true });
@@ -203,6 +207,7 @@ describe('handleVerifySuccess', () => {
     const reject = jest.fn(value => value)
     const verifiedJwt = {
       "body": {
+        "cid": "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
         "iss": "http://localhost:4000/t/shark-academy",
         "tnt": "shark-academy",
         "aud": "http://localhost:4200"
@@ -213,6 +218,7 @@ describe('handleVerifySuccess', () => {
       {
         valid: true,
         claims: {
+          "cid": "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
         "iss": "http://localhost:4000/t/shark-academy",
         "tnt": "shark-academy",
         "aud": "http://localhost:4200"
@@ -227,6 +233,7 @@ describe('handleVerifySuccess', () => {
     const reject = jest.fn(value => value)
     const verifiedJwt = {
       "body": {
+        "cid": "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
         "iss": "http://localhost:4000/t/shark-academy",
         "tnt": "communitiz-app",
         "aud": "http://localhost:4200"

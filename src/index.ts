@@ -11,9 +11,11 @@ const genIss = (tnt: string, issuer: string): string => {
 }
 
 const claimsErrors = (claims: any, cryptrConfig: CryptrConfig): object => {
+  console.log('cryptrConfig', cryptrConfig)
+  console.log('cid', claims["cid"])
   return {
     "issuer": claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
-    "client_id": claims["cid"] === cryptrConfig.client_id,
+    "client_ids": cryptrConfig.client_ids.includes(claims["cid"]),
     "audiences": cryptrConfig.audiences.includes(claims["aud"]),
     "tenants": cryptrConfig.tenants.includes(claims["tnt"])
   }
@@ -54,7 +56,7 @@ class CryptrJwtVerifier {
       rateLimit: true,
     })
     return new Promise((resolve, reject) => {
-      client.getSigningKey(kid, (err, key: jwksClient.SigningKey) => {
+      client.getSigningKey(kid, (err, key: any) => {
         if(err) {
           return reject(err);
         } else {

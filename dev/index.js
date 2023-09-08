@@ -7,7 +7,7 @@ const arrayEnv = (envValue) => {
 
 const CONFIG = {
   audiences: arrayEnv(process.env.CRYPTR_AUDIENCES),
-  client_id: process.env.CRYPTR_CLIENT_ID,
+  client_ids: arrayEnv(process.env.CRYPTR_CLIENT_IDS),
   issuer: process.env.CRYPTR_ISSUER,
   tenants: arrayEnv(process.env.CRYPTR_TENANTS)
 };
