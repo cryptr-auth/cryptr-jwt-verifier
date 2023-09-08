@@ -1,6 +1,6 @@
 {
   "name": "@cryptr/cryptr-jwt-verifier",
-  "version": "0.1.1",
+  "version": "0.3.0",
   "description": "Cryptr Jwt verifier library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -33,7 +33,8 @@
     "jwt",
     "authentication",
     "oAuth",
-    "token"
+    "token",
+    "jwks"
   ],
   "author": "Cryptr <thibaud@cryptr.co> (https://www/cryptr.co)",
   "license": "ISC",
