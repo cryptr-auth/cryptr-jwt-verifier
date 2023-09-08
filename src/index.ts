@@ -9,8 +9,11 @@ import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
 const genIss = (tnt: string, issuer: string): string => {
   return `${issuer}/t/${tnt}`
 }
+
+const claimsErrors = (claims: any, cryptrConfig: CryptrConfig): object => {
   return {
     "issuer": claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
+    "client_id": claims["cid"] === cryptrConfig.client_id,
     "audiences": cryptrConfig.audiences.includes(claims["aud"]),
     "tenants": cryptrConfig.tenants.includes(claims["tnt"])
   }
@@ -70,7 +73,7 @@ class CryptrJwtVerifier {
     reject({valid: false, errors: msg})
   }
 
-  async verify(token: string) {
+  async verify(token: string): Promise<unknown> {
 
     return new Promise((resolve, reject) => {
       try{
@@ -92,7 +95,7 @@ class CryptrJwtVerifier {
                     claims: jwtBody
                   })
                 } else {
-                  let keysToCheck : String[] = []
+                  let keysToCheck : string[] = []
                   Object.keys(errorClaims).forEach(key => {
                     if(!errorClaims[key]) { keysToCheck.push(key)}
                   });
@@ -104,8 +107,9 @@ class CryptrJwtVerifier {
           .catch((err) => {
             this.handleVerifyError(reject, err)
           })
-      }catch(err){
-        this.handleVerifyError(reject, err)
+      } catch(err)
+      {
+        this.handleVerifyError(reject, err as VerifyError)
       }
     });
   }
