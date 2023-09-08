@@ -1,6 +1,6 @@
 export interface CryptrConfig {
   audiences: string[];
-  client_id: string;
+  client_ids: string[];
   issuer: string;
   tenants: string[];
   cacheMaxAge?: number;
