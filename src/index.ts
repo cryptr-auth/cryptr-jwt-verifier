@@ -1,6 +1,6 @@
-import jwksClient, { SigningKey } from "jwks-rsa";
+import jwksClient, {  CertSigningKey, SigningKey } from "jwks-rsa";
 import jwtDecode from "jwt-decode";
-import nJwt from "njwt";
+import nJwt, { Jwt } from "njwt";
 
 import { validIssuer } from "@cryptr/cryptr-config-validation";
 import { CryptrConfig, CryptrOptions, VerifyError } from "./interfaces";
@@ -64,7 +64,7 @@ class CryptrJwtVerifier {
     })
   }
 
-  handleVerifyError(reject: (reason?: any) => void, error: VerifyError) {
+  handleVerifyError(reject: (reason?: any) => void, error: any) {
     this.handleVerifyErrorMessage(reject, error.message)
   }
 
@@ -72,7 +72,7 @@ class CryptrJwtVerifier {
     reject({valid: false, errors: msg})
   }
 
-  handleVerifySuccess(verifiedJwt: object, resolve: (value: any) => void, reject: (reason?: any) => void) {
+  handleVerifySuccess(verifiedJwt: Jwt, resolve: (value: any) => void, reject: (reason?: any) => void) {
     const jwtBody = verifiedJwt["body"]
 
     const errorClaims = claimsErrors(jwtBody, this.cryptrConfig)
@@ -87,16 +87,17 @@ class CryptrJwtVerifier {
     }
   }
 
-  verifyTokenWithKey(token: string, publicKey: SigningKey, resolve: (value: any) => void, reject: (reason?: any) => void) {
-    return nJwt.verify(token, publicKey, SIGNING_ALG, (err: any, verifiedJwt: object) => {
-        if(err) {
-          console.debug(err)
-          return this.handleVerifyError(reject, err)
-        } else {
-          console.debug("there")
-          return this.handleVerifySuccess(verifiedJwt, resolve, reject)
+  verifyTokenWithKey(token: string, publicKey: string | Buffer | undefined, resolve: (value: any) => void, reject: (reason?: any) => void) {
+    try {
+      const verifiedJwt = nJwt.verify(token, publicKey, SIGNING_ALG);  
+      if (verifiedJwt !== undefined) {
+        return this.handleVerifySuccess(verifiedJwt, resolve, reject);
+      } else {
+        return this.handleVerifyErrorMessage(reject, 'unable to verify token')
+      }
+    } catch(error) {
+      return this.handleVerifyError(reject, error)
         }
-    })
   }
 
   async verify(token: string): Promise<unknown> {
@@ -108,7 +109,7 @@ class CryptrJwtVerifier {
 
         this.getPublicKey(tnt, kid)
           .then(publicKey => {
-            this.verifyTokenWithKey(token, publicKey, resolve, reject)
+            this.verifyTokenWithKey(token, (publicKey as CertSigningKey).toString(), resolve, reject)
           })
           .catch((err) => {
             this.handleVerifyError(reject, err)
