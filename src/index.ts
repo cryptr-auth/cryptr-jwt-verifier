@@ -11,8 +11,6 @@ const genIss = (tnt: string, issuer: string): string => {
 }
 
 const claimsErrors = (claims: any, cryptrConfig: CryptrConfig): object => {
-  console.log('cryptrConfig', cryptrConfig)
-  console.log('cid', claims["cid"])
   return {
     "issuer": claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
     "client_ids": cryptrConfig.client_ids.includes(claims["cid"]),
