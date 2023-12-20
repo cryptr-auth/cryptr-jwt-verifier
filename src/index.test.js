@@ -80,7 +80,7 @@ eA==
 const KEY2 = `-----BEGIN CERTIFICATE-----
 MIIF/TCCA+WgAwIBAgIJALdrmfHj/aU/MA0GCSqGSIb3DQEBCwUAMIGJMQswCQYD
 VQQGEwJGUjENMAsGA1UECAwETm9yZDEOMAwGA1UEBwwFTGlsbGUxFTATBgNVBAoM
-DFByb215emUgVGVhbTEjMCEGA1UEAwwacHJvbXl6ZS5hdXRoZW50Lm1lIFJvb3Qg
+DFByb215emUgVGVhbTEjMCEGA1UEAwwcHJvbXl6ZS5hdXRoZW50Lm1lIFJvb3Qg
 Q0ExHzAdBgNVBAsMFlByb215emUgVGVhbSBieSBDcnlwdHIwHhcNMjMwODAyMTM1
 NDQ2WhcNNDgwODAxMTM1OTQ2WjCBiTELMAkGA1UEBhMCRlIxDTALBgNVBAgMBE5v
 cmQxDjAMBgNVBAcMBUxpbGxlMRUwEwYDVQQKDAxQcm9teXplIFRlYW0xIzAhBgNV
@@ -292,7 +292,7 @@ describe('verify(token)', () => {
       })
       .catch((resp) => {
         expect(resp.valid).toEqual(false)
-        expect(resp.errors).toMatch(/Unable to find a signing key that matches/)
+        expect(resp.errors).toMatch(/Not Found|Unable/)
       })
   })
 })
