@@ -117,8 +117,8 @@ eA==
 describe("new CryptrJwtVerifier(cryptrConfig)", () => {
   it("should return an instancied Verifier with a config", () => {
     expect(cryptrJwtVerifier.cryptrConfig).toMatchObject({
-      audiences: ["http://localhost:4200"],
-      tenants: ["shark-academy"],
+      audiences: ["http://localhost:8000"],
+      tenants: ["communitiz-app", "3-belges"],
       issuer: "http://localhost:4000",
     });
   });
@@ -138,7 +138,7 @@ describe("new CryptrJwtVerifier(wrong cryptrConfig)", () => {
   xit("should throw an error", () => {
     expect(wrongCryptrJwtVerifier).toMatchObject({
       audiences: ["http://localhost:4200"],
-      tenants: ["shark-academy"],
+      tenants: ["communitiz-app"],
       issuer: "http://localhost:4000",
     });
   });
@@ -147,7 +147,7 @@ describe("new CryptrJwtVerifier(wrong cryptrConfig)", () => {
 describe("getKid(token)", () => {
   it("should return key identifier (kid)", () => {
     expect(cryptrJwtVerifier.getKid(VALID_ACCESS_TOKEN)).toBe(
-      "9f8e5150-e5b1-481a-9025-fc76bd5cbebe"
+      "9b95e6c7-1118-4920-a854-3a26c83269e9"
     );
   });
   
@@ -165,7 +165,7 @@ describe("getKid(token)", () => {
 describe("getTnt(token)", () => {
   it("should return tenant domain (tnt)", () => {
     expect(cryptrJwtVerifier.getTnt(VALID_ACCESS_TOKEN)).toBe(
-      "shark-academy"
+      "3-belges"
     );
   });
   
@@ -207,10 +207,10 @@ describe('handleVerifySuccess', () => {
     const reject = jest.fn(value => value)
     const verifiedJwt = {
       "body": {
-        "cid": "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
-        "iss": "http://localhost:4000/t/shark-academy",
-        "tnt": "shark-academy",
-        "aud": "http://localhost:4200"
+        "cid": "414bb229-66a8-4351-ad93-1309e0b07a02",
+        "iss": "http://localhost:4000/t/communitiz-app",
+        "tnt": "communitiz-app",
+        "aud": "http://localhost:8000",
       }
     }
     cryptrJwtVerifier.handleVerifySuccess(verifiedJwt, resolve, reject)
@@ -218,10 +218,10 @@ describe('handleVerifySuccess', () => {
       {
         valid: true,
         claims: {
-          "cid": "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
-        "iss": "http://localhost:4000/t/shark-academy",
-        "tnt": "shark-academy",
-        "aud": "http://localhost:4200"
+          "cid": "414bb229-66a8-4351-ad93-1309e0b07a02",
+          "iss": "http://localhost:4000/t/communitiz-app",
+          "tnt": "communitiz-app",
+          "aud": "http://localhost:8000"
       }
       }
     )
@@ -233,10 +233,10 @@ describe('handleVerifySuccess', () => {
     const reject = jest.fn(value => value)
     const verifiedJwt = {
       "body": {
-        "cid": "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
+        "cid": "414bb229-66a8-4351-ad93-1309e0b07a02",
         "iss": "http://localhost:4000/t/shark-academy",
-        "tnt": "communitiz-app",
-        "aud": "http://localhost:4200"
+        "tnt": "misapret",
+        "aud": "http://localhost:8000"
       }
     }
     cryptrJwtVerifier.handleVerifySuccess(verifiedJwt, resolve, reject)
@@ -256,17 +256,21 @@ describe("verify(token)", () => {
         expect(resp).toEqual({
           valid: true,
           claims: {
-            aud: "http://localhost:4200",
-            cid: "724b141a-e1eb-4f5b-bfca-22eca8ae3cc4",
-            exp: 1611157545399,
-            iat: 1611156645399,
-            iss: "http://localhost:4000",
-            jti: "68fb8f50-a58d-48e4-8cda-d0cfb8540708",
+            application_metadata: {},
+            aud: "http://localhost:8000",
+            cid: "414bb229-66a8-4351-ad93-1309e0b07a02",
+            dbs: "sandbox",
+            email: "thibaud@3-belges.fr",
+            exp: 1797678396,
+            iat: 1703070433,
+            ips: "cryptr",
+            iss: "http://localhost:4000/t/3-belges",
+            jti: "ec903ea8-d203-47cd-b7e1-6965b4ee7e2c",
             jtt: "access",
-            resource_owner_metadata: {},
-            scp: ["limited"],
-            sub: "eba25511-afce-4c8e-8cab-f82822434648",
-            tnt: "shark-academy",
+            sci: null,
+            scp: ["openid", "email", "profile"],
+            sub: "083ad3e1-cd28-4ee3-a6bd-7592bc1d09ea",
+            tnt: "3-belges",
             ver: 1,
           },
         });
@@ -314,7 +318,7 @@ describe('verify token with second config', () => {
       })
       .catch((resp) => {
         expect(resp.valid).toEqual(false)
-        expect(resp.errors).toStrictEqual("Non-compliant claims, please check tenants")
+        expect(resp.errors).toStrictEqual("Non-compliant claims,\nplease check tenants")
       })
   })
 })
