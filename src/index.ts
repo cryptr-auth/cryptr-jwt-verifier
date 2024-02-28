@@ -125,8 +125,8 @@ class CryptrJwtVerifier {
     return new Promise(
       (resolve: (value: any) => void, reject: (reason?: any) => void) => {
         try {
-          const kid = this.getKid(token)!!!;
-          const tnt = this.getTnt(token)!!!;
+          const kid = this.getKid(token)!;
+          const tnt = this.getTnt(token)!;
 
           this.getPublicKey(tnt, kid)
             .then((publicKey) => {
