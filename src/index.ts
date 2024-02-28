@@ -69,7 +69,7 @@ class CryptrJwtVerifier {
     });
   }
 
-  handleVerifyError(reject: RejectCallback, error: Error): void {
+  handleVerifyError(reject: RejectCallback, error: VerifyError): void {
     this.handleVerifyErrorMessage(reject, error.message);
   }
 
@@ -117,7 +117,7 @@ class CryptrJwtVerifier {
         return this.handleVerifyErrorMessage(reject, "unable to verify token");
       }
     } catch (error) {
-      return this.handleVerifyError(reject, error);
+      return this.handleVerifyError(reject, error as VerifyError);
     }
   }
 
