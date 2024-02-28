@@ -80,7 +80,7 @@ class CryptrJwtVerifier {
   handleVerifySuccess(
     verifiedJwt: Jwt,
     resolve: ResolveCallback,
-    reject: (reason?: any) => void
+    reject: RejectCallback
   ): void {
     const jwtBody = verifiedJwt["body"];
 
@@ -107,7 +107,7 @@ class CryptrJwtVerifier {
     token: string,
     publicKey: string | Buffer | undefined,
     resolve: ResolveCallback,
-    reject: (reason?: any) => void
+    reject: RejectCallback
   ) {
     try {
       const verifiedJwt = nJwt.verify(token, publicKey, SIGNING_ALG);
@@ -122,29 +122,27 @@ class CryptrJwtVerifier {
   }
 
   async verify(token: string): Promise<unknown> {
-    return new Promise(
-      (resolve: (value: any) => void, reject: (reason?: any) => void) => {
-        try {
-          const kid = this.getKid(token)!;
-          const tnt = this.getTnt(token)!;
+    return new Promise((resolve: ResolveCallback, reject: RejectCallback) => {
+      try {
+        const kid = this.getKid(token)!;
+        const tnt = this.getTnt(token)!;
 
-          this.getPublicKey(tnt, kid)
-            .then((publicKey) => {
-              this.verifyTokenWithKey(
-                token,
-                (publicKey as CertSigningKey).toString(),
-                resolve,
-                reject
-              );
-            })
-            .catch((err) => {
-              this.handleVerifyError(reject, err);
-            });
-        } catch (err) {
-          this.handleVerifyError(reject, err as VerifyError);
-        }
+        this.getPublicKey(tnt, kid)
+          .then((publicKey) => {
+            this.verifyTokenWithKey(
+              token,
+              (publicKey as CertSigningKey).toString(),
+              resolve,
+              reject
+            );
+          })
+          .catch((err) => {
+            this.handleVerifyError(reject, err);
+          });
+      } catch (err) {
+        this.handleVerifyError(reject, err as VerifyError);
       }
-    );
+    });
   }
 }
 
