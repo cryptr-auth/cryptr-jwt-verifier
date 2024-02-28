@@ -22,11 +22,9 @@
   "dependencies": {
     "@cryptr/cryptr-config-validation": "^0.1.0",
     "@types/jwt-decode": "^2.2.1",
-    "dotenv": "^16.4.5",
     "jwks-rsa": "^3.1.0",
     "jwt-decode": "^2.2.0",
-    "njwt": "^1.2.0",
-    "nodemon": "^3.1.0"
+    "njwt": "^1.2.0"
   },
   "keywords": [
     "cryptr",
@@ -41,8 +39,10 @@
   "devDependencies": {
     "@babel/preset-env": "^7.23.9",
     "@babel/preset-typescript": "^7.23.3",
+    "dotenv": "^16.4.5",
     "istanbul-badges-readme": "^1.8.5",
     "jest": "^29.7.0",
+    "nodemon": "^3.1.0",
     "typescript": "^5.3.3"
   },
   "repository": {
