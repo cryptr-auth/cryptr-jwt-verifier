@@ -69,11 +69,11 @@ class CryptrJwtVerifier {
     });
   }
 
-  handleVerifyError(reject: RejectCallback, error: any) {
+  handleVerifyError(reject: RejectCallback, error: any): void {
     this.handleVerifyErrorMessage(reject, error.message);
   }
 
-  handleVerifyErrorMessage(reject: RejectCallback, msg: string) {
+  handleVerifyErrorMessage(reject: RejectCallback, msg: string): void {
     reject({ valid: false, errors: msg });
   }
 
@@ -81,7 +81,7 @@ class CryptrJwtVerifier {
     verifiedJwt: Jwt,
     resolve: ResolveCallback,
     reject: (reason?: any) => void
-  ) {
+  ): void {
     const jwtBody = verifiedJwt["body"];
 
     const errorClaims = claimsErrors(jwtBody, this.cryptrConfig);
@@ -90,7 +90,7 @@ class CryptrJwtVerifier {
     if (validClaims) {
       return resolve({ valid: true, claims: jwtBody });
     } else {
-      let keysToCheck: string[] = [];
+      const keysToCheck: string[] = [];
       Object.keys(errorClaims).forEach((k) => {
         if (!errorClaims[k]) {
           keysToCheck.push(k);
