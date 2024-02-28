@@ -4,15 +4,15 @@ export interface CryptrConfig {
   issuer: string;
   tenants: string[];
   cacheMaxAge?: number;
-  jwksRequestsPerMinute?: number
+  jwksRequestsPerMinute?: number;
 }
 
 export interface CryptrOptions {
-  test: boolean
+  test: boolean;
 }
 
 export interface VerifyError {
-  message: string
+  message: string;
 }
 
 export type RejectCallback = (reason?: any) => void;
