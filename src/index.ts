@@ -1,9 +1,9 @@
-import jwksClient, {  CertSigningKey, SigningKey } from "jwks-rsa";
+import jwksClient, { CertSigningKey, SigningKey } from "jwks-rsa";
 import jwtDecode from "jwt-decode";
 import nJwt, { Jwt } from "njwt";
 
 import { validIssuer } from "@cryptr/cryptr-config-validation";
-import { CryptrConfig, CryptrOptions, VerifyError } from "./interfaces";
+import { CryptrConfig, CryptrOptions, RejectCallback, ResolveCallback, VerifyError } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
 
 const genIss = (tnt: string, issuer: string): string => {
@@ -64,15 +64,15 @@ class CryptrJwtVerifier {
     })
   }
 
-  handleVerifyError(reject: (reason?: any) => void, error: any) {
+  handleVerifyError(reject: RejectCallback, error: any) {
     this.handleVerifyErrorMessage(reject, error.message)
   }
 
-  handleVerifyErrorMessage(reject: (reason?: any) => void, msg: string) {
+  handleVerifyErrorMessage(reject: RejectCallback, msg: string) {
     reject({valid: false, errors: msg})
   }
 
-  handleVerifySuccess(verifiedJwt: Jwt, resolve: (value: any) => void, reject: (reason?: any) => void) {
+  handleVerifySuccess(verifiedJwt: Jwt, resolve: ResolveCallback, reject: (reason?: any) => void) {
     const jwtBody = verifiedJwt["body"]
 
     const errorClaims = claimsErrors(jwtBody, this.cryptrConfig)
@@ -87,7 +87,7 @@ class CryptrJwtVerifier {
     }
   }
 
-  verifyTokenWithKey(token: string, publicKey: string | Buffer | undefined, resolve: (value: any) => void, reject: (reason?: any) => void) {
+  verifyTokenWithKey(token: string, publicKey: string | Buffer | undefined, resolve: ResolveCallback, reject: (reason?: any) => void) {
     try {
       const verifiedJwt = nJwt.verify(token, publicKey, SIGNING_ALG);  
       if (verifiedJwt !== undefined) {

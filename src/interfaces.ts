@@ -14,3 +14,6 @@ export interface CryptrOptions {
 export interface VerifyError {
   message: string
 }
+
+export type RejectCallback = (reason?: any) => void;
+export type ResolveCallback = (value: any) => void;
