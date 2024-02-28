@@ -15,5 +15,5 @@ export interface VerifyError {
   message: string;
 }
 
-export type RejectCallback = (reason?: any) => void;
-export type ResolveCallback = (value: any) => void;
+export type RejectCallback = (reason?: unknown) => void;
+export type ResolveCallback = (value: unknown) => void;

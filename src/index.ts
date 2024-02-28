@@ -16,7 +16,7 @@ const genIss = (tnt: string, issuer: string): string => {
   return `${issuer}/t/${tnt}`;
 };
 
-const claimsErrors = (claims: any, cryptrConfig: CryptrConfig): object => {
+const claimsErrors = (claims: object, cryptrConfig: CryptrConfig): object => {
   return {
     issuer: claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
     client_ids: cryptrConfig.client_ids.includes(claims["cid"]),
@@ -59,17 +59,17 @@ class CryptrJwtVerifier {
       rateLimit: true,
     });
     return new Promise((resolve, reject) => {
-      client.getSigningKey(kid, (err, key: any) => {
-        if (err) {
-          return reject(err);
-        } else {
+      client.getSigningKey(kid, (err, key?: SigningKey) => {
+        if (key) {
           return resolve(key["publicKey"]);
+        } else {
+          return reject(err);
         }
       });
     });
   }
 
-  handleVerifyError(reject: RejectCallback, error: any): void {
+  handleVerifyError(reject: RejectCallback, error: Error): void {
     this.handleVerifyErrorMessage(reject, error.message);
   }
 
