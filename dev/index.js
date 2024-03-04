@@ -1,4 +1,3 @@
-// let CryptrJwtVerifier = require('@cryptr/cryptr-jwt-verifier');
 let CryptrJwtVerifier = require('../dist/index')
 require('dotenv').config()
 const arrayEnv = (envValue) => {
@@ -11,6 +10,7 @@ const CONFIG = {
   issuer: process.env.CRYPTR_ISSUER,
   tenants: arrayEnv(process.env.CRYPTR_TENANTS)
 };
+
 let verifier =  new CryptrJwtVerifier.default(CONFIG);
 let token1 = process.env.CRYPTR_TOKEN_1
 let token2 = process.env.CRYPTR_TOKEN_2
