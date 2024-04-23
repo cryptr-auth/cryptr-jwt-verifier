@@ -1,6 +1,6 @@
 {
   "name": "@cryptr/cryptr-jwt-verifier",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "Cryptr Jwt verifier library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -35,7 +35,10 @@
     "jwks"
   ],
   "resolutions": {
-    "jwks-rsa/jose": ">= 4.15.5"
+    "jwks-rsa/jose": ">=4.15.5"
+  },
+  "overrides": {
+    "jose": ">=4.15.5"
   },
   "author": "Cryptr <thibaud@cryptr.co> (https://www/cryptr.co)",
   "license": "ISC",
