@@ -35,7 +35,10 @@
     "jwks"
   ],
   "resolutions": {
-    "jwks-rsa/jose": ">= 4.15.5"
+    "jwks-rsa/jose": ">=4.15.5"
+  },
+  "overrides": {
+    "jose": ">=4.15.5"
   },
   "author": "Cryptr <thibaud@cryptr.co> (https://www/cryptr.co)",
   "license": "ISC",
