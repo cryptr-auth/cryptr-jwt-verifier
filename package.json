@@ -34,6 +34,9 @@
     "token",
     "jwks"
   ],
+  "resolutions": {
+    "jwks-rsa/jose": ">= 4.15.5"
+  },
   "author": "Cryptr <thibaud@cryptr.co> (https://www/cryptr.co)",
   "license": "ISC",
   "devDependencies": {
