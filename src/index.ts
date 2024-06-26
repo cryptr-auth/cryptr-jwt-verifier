@@ -38,8 +38,8 @@ class CryptrJwtVerifier {
   }
 
   async getPublicKey(domain: string, kid: string): Promise<SigningKey> {
-    let jwksUri = `${genIss(domain, this.cryptrConfig.issuer)}/.well-known`;
-    let client = jwksClient({
+    const jwksUri = `${genIss(domain, this.cryptrConfig.issuer)}/.well-known`;
+    const client = jwksClient({
       jwksUri: jwksUri,
       cache: true,
       cacheMaxAge: this.cryptrConfig.cacheMaxAge ?? 60 * 60 * 1000,

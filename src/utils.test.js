@@ -1,4 +1,5 @@
 import {claimsErrors, getClaimsDomain, getClaimsVersion, genIss} from './utils'
+
 describe('getClaimsVersion/1', () => {
   it('should return undefined if empty object', () => {
     expect(getClaimsVersion({})).toEqual(-1)
