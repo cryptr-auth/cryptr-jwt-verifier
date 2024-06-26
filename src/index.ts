@@ -12,8 +12,8 @@ import {
 } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
 
-const genIss = (tnt: string, issuer: string): string => {
-  return `${issuer}/t/${tnt}`;
+const genIss = (domain: string, issuer: string): string => {
+  return `${issuer}/t/${domain}`;
 };
 
 const claimsErrors = (claims: object, cryptrConfig: CryptrConfig): object => {
@@ -65,8 +65,8 @@ class CryptrJwtVerifier {
     return claims["ver"] == 3 ? claims["org"] : claims["tnt"];
   }
 
-  async getPublicKey(tnt: string, kid: string): Promise<SigningKey> {
-    let jwksUri = `${genIss(tnt, this.cryptrConfig.issuer)}/.well-known`;
+  async getPublicKey(domain: string, kid: string): Promise<SigningKey> {
+    let jwksUri = `${genIss(domain, this.cryptrConfig.issuer)}/.well-known`;
     let client = jwksClient({
       jwksUri: jwksUri,
       cache: true,
@@ -142,9 +142,9 @@ class CryptrJwtVerifier {
     return new Promise((resolve: ResolveCallback, reject: RejectCallback) => {
       try {
         const kid = this.getKid(token)!;
-        const tnt = this.getTokenDomain(token)!;
+        const domain = this.getTokenDomain(token)!;
 
-        this.getPublicKey(tnt, kid)
+        this.getPublicKey(domain, kid)
           .then((publicKey) => {
             this.verifyTokenWithKey(
               token,
