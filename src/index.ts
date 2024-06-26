@@ -11,19 +11,8 @@ import {
   VerifyError,
 } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
+import { claimsErrors, genIss, getClaimsDomain } from "./utils";
 
-const genIss = (tnt: string, issuer: string): string => {
-  return `${issuer}/t/${tnt}`;
-};
-
-const claimsErrors = (claims: object, cryptrConfig: CryptrConfig): object => {
-  return {
-    issuer: claims["iss"] === genIss(claims["tnt"], cryptrConfig.issuer),
-    client_ids: cryptrConfig.client_ids.includes(claims["cid"]),
-    audiences: cryptrConfig.audiences.includes(claims["aud"]),
-    tenants: cryptrConfig.tenants.includes(claims["tnt"]),
-  };
-};
 class CryptrJwtVerifier {
   cryptrConfig: CryptrConfig;
   jwksUri: string;
@@ -43,14 +32,14 @@ class CryptrJwtVerifier {
     return decode["kid"];
   }
 
-  getTnt(token: string): string | undefined {
+  getTokenDomain(token: string): string | undefined {
     const decode: object = jwtDecode(token);
-    return decode["tnt"];
+    return getClaimsDomain(decode);
   }
 
-  async getPublicKey(tnt: string, kid: string): Promise<SigningKey> {
-    let jwksUri = `${genIss(tnt, this.cryptrConfig.issuer)}/.well-known`;
-    let client = jwksClient({
+  async getPublicKey(domain: string, kid: string): Promise<SigningKey> {
+    const jwksUri = `${genIss(domain, this.cryptrConfig.issuer)}/.well-known`;
+    const client = jwksClient({
       jwksUri: jwksUri,
       cache: true,
       cacheMaxAge: this.cryptrConfig.cacheMaxAge ?? 60 * 60 * 1000,
@@ -125,9 +114,9 @@ class CryptrJwtVerifier {
     return new Promise((resolve: ResolveCallback, reject: RejectCallback) => {
       try {
         const kid = this.getKid(token)!;
-        const tnt = this.getTnt(token)!;
+        const domain = this.getTokenDomain(token)!;
 
-        this.getPublicKey(tnt, kid)
+        this.getPublicKey(domain, kid)
           .then((publicKey) => {
             this.verifyTokenWithKey(
               token,
