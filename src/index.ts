@@ -11,28 +11,8 @@ import {
   VerifyError,
 } from "./interfaces";
 import { DEFAULT_OPTS, SIGNING_ALG } from "./defaults";
+import { claimsErrors, genIss, getClaimsDomain } from "./utils";
 
-const genIss = (domain: string, issuer: string): string => {
-  return `${issuer}/t/${domain}`;
-};
-
-const claimsErrors = (claims: object, cryptrConfig: CryptrConfig): object => {
-  const { audiences, client_ids, issuer, tenants } = cryptrConfig;
-  const [aud, jtt, version] = [claims["aud"], claims["jtt"], claims["ver"]];
-  const isV3 = version == 3;
-  const isIDV3 = isV3 && jtt == "openid";
-
-  const tokenDomain = isV3 ? claims["org"] : claims["tnt"];
-  const validAudience = isIDV3
-    ? client_ids.includes(aud)
-    : audiences.includes(aud);
-  return {
-    issuer: isV3 || claims["iss"] === genIss(claims["tnt"], issuer),
-    client_ids: isV3 || client_ids.includes(claims["cid"]),
-    audiences: validAudience,
-    tenants: tenants.includes(tokenDomain),
-  };
-};
 class CryptrJwtVerifier {
   cryptrConfig: CryptrConfig;
   jwksUri: string;
@@ -54,15 +34,7 @@ class CryptrJwtVerifier {
 
   getTokenDomain(token: string): string | undefined {
     const decode: object = jwtDecode(token);
-    return this.getClaimsDomain(decode);
-  }
-
-  getClaimsVersion(claims: object): string | undefined {
-    return claims["ver"];
-  }
-
-  getClaimsDomain(claims: object): string | undefined {
-    return claims["ver"] == 3 ? claims["org"] : claims["tnt"];
+    return getClaimsDomain(decode);
   }
 
   async getPublicKey(domain: string, kid: string): Promise<SigningKey> {
