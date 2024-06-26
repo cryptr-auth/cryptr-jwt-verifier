@@ -52,9 +52,17 @@ class CryptrJwtVerifier {
     return decode["kid"];
   }
 
-  getTnt(token: string): string | undefined {
+  getTokenDomain(token: string): string | undefined {
     const decode: object = jwtDecode(token);
-    return decode["tnt"];
+    return this.getClaimsDomain(decode);
+  }
+
+  getClaimsVersion(claims: object): string | undefined {
+    return claims["ver"];
+  }
+
+  getClaimsDomain(claims: object): string | undefined {
+    return claims["ver"] == 3 ? claims["org"] : claims["tnt"];
   }
 
   async getPublicKey(tnt: string, kid: string): Promise<SigningKey> {
@@ -134,7 +142,7 @@ class CryptrJwtVerifier {
     return new Promise((resolve: ResolveCallback, reject: RejectCallback) => {
       try {
         const kid = this.getKid(token)!;
-        const tnt = this.getTnt(token)!;
+        const tnt = this.getTokenDomain(token)!;
 
         this.getPublicKey(tnt, kid)
           .then((publicKey) => {
