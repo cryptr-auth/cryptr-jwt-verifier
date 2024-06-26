@@ -162,21 +162,21 @@ describe("getKid(token)", () => {
   });
 });
 
-describe("getTnt(token)", () => {
+describe("getTokenDomain(token)", () => {
   it("should return tenant domain (tnt)", () => {
-    expect(cryptrJwtVerifier.getTnt(VALID_ACCESS_TOKEN)).toBe(
+    expect(cryptrJwtVerifier.getTokenDomain(VALID_ACCESS_TOKEN)).toBe(
       "3-belges"
     );
   });
   
   it("should return tenant domain (tnt)", () => {
-    expect(cryptrJwtVerifier.getTnt(INVALID_ACCESS_TOKEN)).toBe(
+    expect(cryptrJwtVerifier.getTokenDomain(INVALID_ACCESS_TOKEN)).toBe(
       "misapret"
     );
   });
   
   it("should fail if wrong token", () => {
-    expect(() => cryptrJwtVerifier.getTnt("azerty")).toThrow();
+    expect(() => cryptrJwtVerifier.getTokenDomain("azerty")).toThrow();
   });
 });
 
