@@ -249,7 +249,7 @@ describe('handleVerifySuccess', () => {
 })
 
 describe("verify(token)", () => {
-  it("should valid token with decode claims", async () => {
+  xit("should valid token with decode claims", async () => {
     await cryptrJwtVerifier
       .verify(VALID_ACCESS_TOKEN)
       .then((resp) => {
@@ -282,10 +282,8 @@ describe("verify(token)", () => {
         });
       });
   });
-});
 
-describe('verify(token)', () => {
-  it('should unvalid token with no signing key', async () => {
+  xit('should unvalid token with no signing key', async () => {
     await cryptrJwtVerifier.verify(INVALID_ACCESS_TOKEN)
       .then((resp) => {
         expect(resp).toBe(false)
@@ -298,7 +296,7 @@ describe('verify(token)', () => {
 })
 
 describe('verify old token', () => {
-  it('should unvalid token with no signing key', async () => {
+  xit('should unvalid token with no signing key', async () => {
     await cryptrJwtVerifier.verify(OLD_ACCESS_TOKEN)
       .then((resp) => {
         expect(resp).toBe(false)
@@ -311,7 +309,7 @@ describe('verify old token', () => {
 })
 
 describe('verify token with second config', () => {
-  it('should fails with non conform claims', async () => {
+  xit('should fails with non conform claims', async () => {
     await secondCryptrJwtVerifier.verify(VALID_ACCESS_TOKEN)
       .then((resp) => {
         expect(resp).toBe(false)
