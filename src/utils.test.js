@@ -51,7 +51,7 @@ describe('claimsErrors/2', () => {
       audiences: [],
       client_ids: [],
       tenants: [],
-      issuer: [],
+      issuer: undefined,
     })).toEqual({
       audiences: false,
       client_ids: false,
@@ -69,7 +69,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: [],
       tenants: ['org'],
-      issuer: [],
+      issuer: undefined,
     })).toEqual({
       audiences: true,
       client_ids: true,
@@ -88,7 +88,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: [],
       tenants: ['org'],
-      issuer: [],
+      issuer: undefined,
     })).toEqual({
       audiences: false,
       client_ids: true,
@@ -107,7 +107,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: ['http://localhost:3000'],
       tenants: ['org'],
-      issuer: [],
+      issuer: undefined,
     })).toEqual({
       audiences: true,
       client_ids: true,
@@ -127,7 +127,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: ['client_id'],
       tenants: ['org'],
-      issuer: ['http://localhost:4000'],
+      issuer: 'http://localhost:4000',
     })).toEqual({
       audiences: true,
       client_ids: true,
@@ -147,7 +147,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: ['client_id'],
       tenants: ['org'],
-      issuer: ['http://localhost:4000'],
+      issuer: 'http://localhost:4000',
     })).toEqual({
       audiences: false,
       client_ids: true,
@@ -167,7 +167,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: ['client_id'],
       tenants: ['org'],
-      issuer: ['http://localhost:4000'],
+      issuer: 'http://localhost:4000',
     })).toEqual({
       audiences: false,
       client_ids: true,
@@ -187,7 +187,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: ['client_id'],
       tenants: ['org'],
-      issuer: ['http://localhost:4000'],
+      issuer: 'http://localhost:4000',
     })).toEqual({
       audiences: true,
       client_ids: false,
@@ -207,7 +207,7 @@ describe('claimsErrors/2', () => {
       audiences: ['http://localhost:3000'],
       client_ids: ['client_id'],
       tenants: ['org'],
-      issuer: ['http://localhost:4000'],
+      issuer: 'http://localhost:4000',
     })).toEqual({
       audiences: true,
       client_ids: true,
