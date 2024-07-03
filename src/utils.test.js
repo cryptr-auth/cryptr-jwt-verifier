@@ -43,6 +43,11 @@ describe('genIss/2', () => {
     let domain = getClaimsDomain({ver: 1, tnt: 'tnt', org: 'domain'})
     expect(genIss(domain, 'http://localhost:4000')).toEqual('http://localhost:4000/t/tnt')
   })
+  
+  test('should return issuer if already append with /t/:domain', () => {
+    let domain = getClaimsDomain({ver: 1, tnt: 'tnt', org: 'domain'})
+    expect(genIss(domain, 'http://localhost:4000/t/tnt')).toEqual('http://localhost:4000/t/tnt')
+  })
 })
 
 describe('claimsErrors/2', () => {
