@@ -1,7 +1,8 @@
 import { CryptrConfig } from "./interfaces";
 
 export const genIss = (domain: string, issuer: string): string => {
-  return `${issuer}/t/${domain}`;
+  let lastPath = `/t/${domain}`;
+  return issuer && issuer.endsWith(lastPath) ? issuer : `${issuer}${lastPath}`;
 };
 
 export const claimsErrors = (
