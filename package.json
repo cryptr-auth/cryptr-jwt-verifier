@@ -22,7 +22,7 @@
   "dependencies": {
     "@cryptr/cryptr-config-validation": "^0.1.0",
     "@types/jwt-decode": "^2.2.1",
-    "jwks-rsa": "^3.1.0",
+    "jwks-rsa": "^3.2.0",
     "jwt-decode": "^2.2.0",
     "njwt": "^2.0.1"
   },
